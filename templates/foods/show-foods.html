@@ -1,0 +1,44 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="food row">
+    
+	{% for food in foods %}
+           	<div class="col-sm-auto">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="{{food.image.url}}" alt="Card image cap" height="150px">
+                    <div class="card-body">
+                        <h5 class="card-title">{{food.title}}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Price : {{food.price}} &#x20B9</h6>
+                        <p class="card-text">Quantity : {{food.quantity}} <br>
+                            Category : {{food.category}}</p>
+
+                        <button id="{{food.id}}" onclick="add_to_cart('{{food.id}}')" class="add-to-cart-btn btn btn-warning">Add
+                            To
+                            Cart</button>
+                    </div>
+                </div>
+            </div>
+	{% endfor %}
+
+</div>
+<script>
+    function add_to_cart(id) {
+        var btn = document.getElementById(id);
+
+        $.ajax({
+            url: "{% url 'add-to-cart' %}",
+            method: 'GET',
+            data: {
+                product_id: id
+            },
+            success: function (response) {
+                $('#cart-notification').attr('style', 'display:inline; color:red;');
+                btn.disabled = true;
+              },
+            error: function(error) {
+                alert('Please Login First!');
+            }
+        });
+    }
+</script>
+{% endblock %}

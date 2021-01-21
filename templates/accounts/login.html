@@ -1,0 +1,26 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="login">
+	<form id="login-form" method="POST">
+		<h2>Login</h2>
+		{% csrf_token %}
+		{% for message in messages %}	
+		<b style="color: red;">{{message}}</b>
+		{% endfor %}
+		<div style="padding-bottom: 20px;padding-top: 10px;">
+		<span>User Type : </span><span>&nbsp;</span>
+		<input type="radio" name="user" value="customer" id="customer" checked>
+		<label for="customer" class="form-check-label">Customer</label>
+		<span>&nbsp;</span>
+		<input type="radio" name="user" value="admin" id="admin">
+		<label for="admin" class="form-check-label">Admin</label><br>
+		</div>
+		<label for="username">Email/Username :</label><br>
+		<input type="text" name="username" id="username" class="form-control"><br>
+		<label for="password">Password :</label><br>
+		<input type="password" name="password" id="password" class="form-control"><br>
+		<input type="submit" value="SUBMIT" class="btn btn-primary">
+		<a href="{% url 'register' %}">Register</a>
+	</form>
+</div>
+{% endblock %}

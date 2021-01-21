@@ -1,0 +1,12 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="login">
+    <form method="POST" enctype="multipart/form-data">
+        <h2>Add Food</h2>
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit" class="btn btn-success">
+        <a href="{% url 'edit-foods' %}" class="btn btn-primary" style="margin-left: 200px;">Back</a>
+    </form>
+</div>
+{% endblock %}

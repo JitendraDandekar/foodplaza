@@ -1,0 +1,18 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="register">
+	<div class="branding">
+		<b>FoodPlaza</b>
+	</div>
+	<form id="register-form" onsubmit="return validate()" action="{% url 'register' %}" method="POST">
+		<h2>Registration</h2>
+		{% for message in messages %}
+		<h6 style="color: red;">{{message}}</h6>
+		{% endfor %}
+		{% csrf_token %}
+		{{form}}
+		<span id="register-error" style="color: red;"></span>
+		<input type="submit" class="btn btn-primary" style="margin-top: 10px;">
+	</form>
+</div>
+{% endblock %}

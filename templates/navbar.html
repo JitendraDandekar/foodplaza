@@ -1,0 +1,53 @@
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #6666ff;">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'index' %}">FloodPlaza</a>
+        <div class="d-flex">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if request.session.customer %}
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page">Hi, {{request.session.customer_name}}!</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="{% url 'index' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'show-foods' %}">Foods</a>
+                </li>
+                
+                {% if request.session.customer or request.session.admin %}
+                
+                {% if request.session.customer %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'cart' %}">Cart
+                        <span id="cart-notification" style="display:none"><b>*</b></span>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% if request.session.admin %}
+                <!-- Example single danger button -->
+                <div class="btn-group">
+                  <a type="button" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Admin Panel
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'edit-foods' %}">Foods</a></li>
+                    <li><a class="dropdown-item" href="{% url 'view-customers' %}">Customers</a></li>
+                  </ul>
+                </div>
+                {% endif %}
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Sign Out!</a>
+                </li>
+                
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Sign In!</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

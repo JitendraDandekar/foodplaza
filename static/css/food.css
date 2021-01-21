@@ -1,0 +1,54 @@
+.food{
+	width: 100%;
+	padding: 10px;
+	color: black;
+}
+
+.cart{
+	color: black;
+}
+
+.profile{
+	text-align: center;
+	padding-top: 20px;
+}
+
+.vertical{
+	border-right: 2px solid grey;
+	height: 80vh;
+	width: 0;
+	margin-top: 30px;
+}
+
+#profile-pic{
+	border-radius: 50%;
+	margin: 10px;
+}
+
+.contact {
+	text-align: left;
+}
+
+.contact > p {
+	text-align: right;
+}
+
+.order{
+	padding-top: 20px;
+}
+
+.quantity-btn{
+	border: none;
+	background: none;
+	color: blue;
+	font-weight: bolder;
+}
+
+.quantity-btn:disabled{
+	color: grey;
+}
+
+.quantity-btn:focus{
+	outline: none;
+	color: red;
+}
