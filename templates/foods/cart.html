@@ -39,6 +39,7 @@
 				<hr>
 				<button class="btn btn-lg btn-warning" data-bs-toggle="modal"
                     data-bs-target="#profile-model">Change Address</button>
+
                     <!-- Modal -->
                 <div class="modal fade" id="profile-model" tabindex="-1" aria-labelledby="profile-model-label"
                     aria-hidden="true">
@@ -77,6 +78,8 @@
                                 role="tab" aria-controls="nav-cart" aria-selected="true">Cart</a>
                         <a class="nav-link" id="nav-orders-tab" data-bs-toggle="tab" href="#nav-orders" role="tab"
                                 aria-controls="nav-orders" aria-selected="false">Orders</a>
+                        <a class="nav-link" id="nav-password-tab" data-bs-toggle="tab" href="#nav-password" role="tab"
+                                aria-controls="nav-password" aria-selected="false">Profile</a>
                     </div>
                 </nav>
                 <div class="tab-content" id="nav-tabContent">
@@ -122,6 +125,7 @@
 									<th scope="col">Order Quantity</th>
 									<th scope="col">Total Price</th>
 									<th scope="col">Ordered Date</th>
+									<th scope="col">Delivery</th>
                                 </tr>
                             </thead>
                             <tbody id="order-tbody">
@@ -129,6 +133,20 @@
                             </tbody>
                         </table>
 
+                    </div>
+                    <div class="tab-pane fade" id="nav-password" role="tabpanel" aria-labelledby="nav-password-tab">
+                		<div class="change-password">
+                			<form id="change-password-form">
+								<h5>Change Password</h5>
+								<input type="password" name="old_password" id="old_password" placeholder="Old Password" class="form-control">
+								<input type="password" name="new_password" id="new_password" placeholder="New Password" class="form-control" style="margin-top: 10px">
+								<input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" class="form-control" style="margin-top: 10px">
+								<input onclick="change_password()" type="button" value="Submit" class="btn btn-warning btn-md" style="margin-top: 10px">
+							</form>
+							<script>
+								$("#change-password-form").validate();
+							</script>
+                		</div>    	
                     </div>
 				</div>
 			</div>
@@ -138,7 +156,50 @@
 {% endblock %}
 </body>
 <script>
+	function change_password(){
+		var new_password = $('#new_password').val();
+		var old_password = $('#old_password').val();
+		var confirm_password = $('#confirm_password').val();
+		if (new_password !=="" & old_password !== "") {
+			if (new_password === confirm_password) {
+				$.ajax({
+					url: "{% url 'change-password' %}",
+					method: 'POST',
+					headers: {
+					'X-CSRFToken': csrftoken
+					},
+					data: {
+						new_password: new_password,
+						old_password: old_password
+					},
+					success: function(response){
+						alert(response);
+						$('#new_password').val("");
+						$('#old_password').val("");
+						$('#confirm_password').val("");
+
+					},
+					error: function(error){
+						alert("Old Password Not Matched!");
+					}
+				});
+			}
+			else {
+				alert("Password not matched!")
+			}
+		}
+		else {
+			alert("All fields should be entered!")
+		}
+		
+	}
+
 	function ordered(){
+		function date_convert(oldDate){
+			var date = new Date(oldDate);
+			var newDate = date.getDate()+"/"+date.getMonth()+"/"+date.getFullYear()+" "+date.getHours()+":"+date.getMinutes();
+			return newDate;
+		}
 		$.ajax({
 			url: "{% url 'ordered-food' %}",
 			method: 'GET',
@@ -149,7 +210,8 @@
 						<td scope="row">`+response[i].title+`</td>
 						<td>`+response[i].cart_quantity+`</td>
 						<td>`+response[i].cart_price+`</td>
-						<td>`+response[i].ordered_date+`</td>
+						<td>`+date_convert(response[i].ordered_date)+`</td>
+						<td>`+(response[i].delivery ? 'Delivered':'Pending')+`</td>
                     </tr>`
 				}
 				$('#order-tbody').html(content)

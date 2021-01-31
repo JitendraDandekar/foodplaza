@@ -80,7 +80,9 @@ def cart(request):
 def view_cart(request):
 	customer_id = request.session['customer']
 	with connection.cursor() as cursor:
-		cursor.execute("select c.id as id, f.title as title, f.quantity as food_quantity, f.price as food_price, c.quantity as cart_quantity, c.price as cart_price from cart c inner join food f on f.id=c.food_id where c.customer_id=%s and c.orderd=false", (customer_id,))
+		cursor.execute("""select c.id as id, f.title as title, f.quantity as food_quantity, f.price as food_price, 
+			c.quantity as cart_quantity, c.price as cart_price from cart c inner join food f 
+			on f.id=c.food_id where c.customer_id=%s and c.orderd=false;""", (customer_id,))
 		rows = cursor.fetchall()
 	columns = ( 'id', 'title', 'food_quantity', 'food_price', 'cart_quantity', 'cart_price')	
 	cart = []
@@ -109,12 +111,27 @@ def place_order(request):
 def ordered_food(request):
 	customer_id = request.session['customer']
 	with connection.cursor() as cursor:
-		cursor.execute("select c.id as id, f.title as title, c.quantity as cart_quantity, c.price as cart_price, c.date as ordered_date from cart c inner join food f on f.id=c.food_id where c.customer_id=%s and c.orderd=true order by c.date desc", (customer_id,))
+		cursor.execute("""select c.id as id, f.title as title, c.quantity as cart_quantity, c.price as cart_price, 
+			c.date as ordered_date, c.delivered as delivery from cart c inner join food f on f.id=c.food_id 
+			where c.customer_id=%s and c.orderd=true order by c.date desc;""", (customer_id,))
 		rows = cursor.fetchall()
 	ordered = []
-	columns = ('id', 'title', 'cart_quantity', 'cart_price', 'ordered_date',)
+	columns = ('id', 'title', 'cart_quantity', 'cart_price', 'ordered_date', 'delivery',)
 	for row in rows:
 		ordered.append(dict(zip(columns, row)))
 	if len(ordered) == 0:
 		return JsonResponse({'status':'false'}, status=404)
 	return JsonResponse(ordered, safe=False)
+
+
+def orders(request):
+	with connection.cursor() as cursor:
+		cursor.execute("""select cust.name, cust.contact, cust.address, f.title, c.quantity, c.price, c.date, c.delivered from customer cust inner join cart c on cust.id=c.customer_id inner join food f
+			on c.food_id=f.id where c.orderd=true order by c.date desc;""")
+		rows = cursor.fetchall()
+	columns = ('name', 'contact', 'address', 'title', 'quantity', 'price', 'date', 'delivered')
+	orders = []
+	for row in rows:
+		orders.append(dict(zip(columns, row)))
+	context = {'orders': orders}
+	return render(request, 'foods/orders.html', context)

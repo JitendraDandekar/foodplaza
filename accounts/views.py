@@ -28,7 +28,7 @@ def login(request):
 
 		if user == 'admin':
 			with connection.cursor() as cursor:
-				cursor.execute("select id from admin where username=%s and password=%s", (username, password))
+				cursor.execute("select id from admin where username=%s and password=%s;", (username, password))
 				user = cursor.fetchone()
 			
 			if user is not None:
@@ -41,7 +41,7 @@ def login(request):
 
 		elif user == 'customer':
 			with connection.cursor() as cursor:
-				cursor.execute("select id, name from customer where email=%s and password=%s", (username, password))
+				cursor.execute("select id, name from customer where email=%s and password=%s;", (username, password))
 				user = cursor.fetchone()
 	
 			if user is not None:
@@ -56,14 +56,12 @@ def login(request):
 
 
 def logout(request):
-	try:
-		del request.session['admin']
-	except KeyError:
-		pass
-	try:
-		del request.session['customer']
-	except KeyError:
-		pass
+	session_keys = list(request.session.keys())
+	for key in session_keys:
+		try:
+			del request.session[key]
+		except KeyError:
+			pass
 	return redirect('index')
 
 
@@ -99,5 +97,16 @@ def view_customers(request):
 	return render(request, 'accounts/customer.html', context)
 
 
-
-
+def change_password(request):
+	customer_id = request.session['customer']
+	old_password = request.POST.get('old_password')
+	new_password = request.POST.get('new_password')
+	with connection.cursor() as cursor:
+		cursor.execute("select * from customer where id=%s and password=%s", (customer_id, old_password))
+		data = cursor.fetchone()
+	if data:
+		with connection.cursor() as cursor:
+			cursor.execute("update customer set password=%s where id=%s;", (new_password, customer_id,))
+		return JsonResponse('Password changed!', safe=False)
+	else:
+		return JsonResponse(status=404)

@@ -22,6 +22,7 @@ class Cart(models.Model):
 	quantity = models.IntegerField()
 	price = models.FloatField()
 	orderd = models.BooleanField(default=False)
+	delivered = models.BooleanField(default=False)
 	date = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
